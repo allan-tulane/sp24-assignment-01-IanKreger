@@ -5,12 +5,23 @@ See assignment-01.pdf for details.
 # no imports needed.
 
 def foo(x):
-    ### TODO
-    pass
+  if x<= 1:
+    return x
+  else:
+    return foo(x-1) + foo(x-2)
 
 def longest_run(mylist, key):
-    ### TODO
-    pass
+  max = 0
+  count = 0
+  for item in mylist:
+    if item == key:
+      count += 1
+      if count >= max:
+        max = count
+    else:
+      count = 0
+  return max
+  
 
 
 class Result:
@@ -37,8 +48,40 @@ def to_value(v):
         return int(v)
         
 def longest_run_recursive(mylist, key):
-    ### TODO
-    pass
+  if len(mylist) == 1:
+    if mylist[0] == key:
+      return Result(left_size=1, right_size=1, longest_size=1, is_entire_range=True)
+    else:
+      return Result(left_size=0, right_size=0, longest_size=0, is_entire_range=False)
 
 
+  mid = len(mylist)//2
+  left_half = mylist[:mid]
+  right_half = mylist[mid:]
+
+  left_result = longest_run_recursive(left_half, key)
+  right_result = longest_run_recursive(right_half, key)
+
+  if left_result.is_entire_range and right_result.is_entire_range:
+    return Result(left_size=len(left_half) + right_result.left_size,
+      right_size=len(right_half) + left_result.right_size,
+      longest_size=len(left_half) + len(right_half),
+      is_entire_range=True)
+  elif left_result.is_entire_range:
+    return Result(left_size=len(left_half) + right_result.left_size,
+      right_size=right_result.right_size,
+      longest_size=max(left_result.longest_size, right_result.longest_size),
+      is_entire_range=False)
+
+  elif right_result.is_entire_range:
+    return Result(left_size=left_result.left_size,
+      right_size=len(right_half) + left_result.right_size,
+      longest_size=max(left_result.longest_size, right_result.longest_size),
+      is_entire_range=False)
+  else:
+    return Result(left_size=left_result.left_size,
+      right_size=right_result.right_size,
+      longest_size=max(left_result.longest_size, right_result.longest_size, left_result.right_size + right_result.left_size),
+      is_entire_range=False)
+    
 
